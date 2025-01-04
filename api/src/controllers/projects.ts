@@ -1,21 +1,57 @@
-import { Project } from 'entities';
-import { catchErrors } from 'errors';
-import { findEntityOrThrow, updateEntity } from 'utils/typeorm';
-import { issuePartial } from 'serializers/issues';
+import { neon } from '@neondatabase/serverless';
 
-export const getProjectWithUsersAndIssues = catchErrors(async (req, res) => {
-  const project = await findEntityOrThrow(Project, req.currentUser.projectId, {
-    relations: ['users', 'issues'],
-  });
-  res.respond({
-    project: {
-      ...project,
-      issues: project.issues.map(issuePartial),
-    },
-  });
-});
+const sql = neon(process.env.NEON_DATABASE_URL!);
 
-export const update = catchErrors(async (req, res) => {
-  const project = await updateEntity(Project, req.currentUser.projectId, req.body);
-  res.respond({ project });
-});
+export const getProjectWithUsersAndIssues = async (req: any, res: any, _next: any) => {
+  try {
+    // Ensure project_id is provided
+    const { project_id } = req.currentUser ?? {};
+    if (!project_id) {
+      return res.status(400).send({ message: 'Project ID is required.' });
+    }
+
+    // Use parameterized queries
+    const projectResult = await sql`SELECT * FROM projects WHERE id = ${project_id}`;
+    const issuesResult = await sql`SELECT * FROM issues WHERE project_id = ${project_id}`;
+    const usersResult = await sql`SELECT * FROM users WHERE project_id = ${project_id}`;
+
+    // Check if the project exists
+    if (projectResult.length === 0) {
+      return res.status(404).send({ message: 'Project not found' });
+    }
+
+    // Respond with the combined data
+    res.respond({
+      project: {
+        ...projectResult[0], // First row contains the project data
+        issues: issuesResult, // Array of issues
+        users: usersResult, // Array of users
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching project data:', error);
+    return res.status(500).send({ message: 'An error occurred while fetching the project data.' });
+  }
+};
+
+export const update = async (req: any, res: any, _next: any) => {
+  const { projectId } = req.currentUser ?? {};
+  const updateData = req.body; // You can sanitize this or validate it if needed
+
+  const updateQuery = `
+    UPDATE projects
+    SET name = $1, url = $2, description = $3
+    WHERE id = $4
+    RETURNING *;
+  `;
+
+  // Use parameterized queries
+  const updateResult = await sql`${updateQuery} ${updateData.name} ${updateData.url} ${updateData.description} ${projectId}`;
+
+  if (!updateResult[0]) {
+    return res.status(404).send({ message: 'Project not found or not updated' });
+  }
+
+  res.respond({ project: updateResult[0] });
+  return; // Ensure no return value that conflicts with Express
+};

@@ -31,5 +31,6 @@
     "forceConsistentCasingInFileNames": true
   },
   "exclude": ["node_modules"],
-  "include": ["src/**/*.ts", "src/types/**/*.d.ts"]
+  "include": ["src/**/*.ts", "src/types/**/*.d.ts"],
+  "typeRoots": ["node_modules/@types", "src/types"]
 }

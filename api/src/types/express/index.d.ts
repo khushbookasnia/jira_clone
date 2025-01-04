@@ -1,3 +1,4 @@
+import { User } from 'entities';
 import { Request, Response } from 'express';
 
 declare global {
@@ -6,8 +7,10 @@ declare global {
       respond: (data: any) => void;
     }
     interface Request {
-      currentUser: import('entities').User;
+      currentUser?: User;
       originalUrl: string;
+      get(header: string): string | undefined;
+      headers: Record<string, string | string[] | undefined>;
     }
   }
 }

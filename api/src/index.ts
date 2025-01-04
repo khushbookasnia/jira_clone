@@ -1,13 +1,12 @@
 import 'module-alias/register';
 import 'dotenv/config';
-import 'reflect-metadata';
 import express from 'express';
 import cors from 'cors';
 import { Request, Response, NextFunction } from 'express';
 
 import createDatabaseConnection from 'database/createConnection';
 import { addRespondToResponse } from 'middleware/response';
-// import { authenticateUser } from 'middleware/authentication';
+import { authenticateUser } from 'middleware/authentication';
 import { handleError } from 'middleware/errors';
 import { RouteNotFoundError } from 'errors';
 
@@ -28,8 +27,11 @@ const initializeExpress = (): void => {
   app.use(express.urlencoded({ extended: true }));
   app.use(addRespondToResponse);
   attachPublicRoutes(app);
-  // app.use('/', authenticateUser);
+  console.log('attachPublicRoutes');
+  app.use('/', authenticateUser);
+  console.log('authenticateUser');
   attachPrivateRoutes(app);
+  console.log('attachPrivateRoutes');
 
   app.use((_req: Request, _res: Response, next: NextFunction) => {
     next(new RouteNotFoundError('Not found'));
