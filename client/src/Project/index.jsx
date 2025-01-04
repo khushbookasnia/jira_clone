@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Redirect, useRouteMatch, useHistory } from 'react-router-dom';
+import { Route, Navigate, useMatch, useNavigate, useParams } from 'react-router-dom'; // Updated imports
 
 import useApi from 'shared/hooks/api';
 import { updateArrayItemById } from 'shared/utils/javascript';
@@ -15,8 +15,9 @@ import ProjectSettings from './ProjectSettings';
 import { ProjectPage } from './Styles';
 
 const Project = () => {
-  const match = useRouteMatch();
-  const history = useHistory();
+  const match = useMatch('project');
+  const navigate = useNavigate();
+  const params = useParams();
 
   const issueSearchModalHelpers = createQueryParamModalHelpers('issue-search');
   const issueCreateModalHelpers = createQueryParamModalHelpers('issue-create');
@@ -29,7 +30,7 @@ const Project = () => {
   const { project } = data;
 
   const updateLocalProjectIssues = (issueId, updatedFields) => {
-    setLocalData(currentData => ({
+    setLocalData((currentData) => ({
       project: {
         ...currentData.project,
         issues: updateArrayItemById(currentData.project.issues, issueId, updatedFields),
@@ -37,15 +38,15 @@ const Project = () => {
     }));
   };
 
+  if (!match) return null;
+
   return (
     <ProjectPage>
       <NavbarLeft
         issueSearchModalOpen={issueSearchModalHelpers.open}
         issueCreateModalOpen={issueCreateModalHelpers.open}
       />
-
       <Sidebar project={project} />
-
       {issueSearchModalHelpers.isOpen() && (
         <Modal
           isOpen
@@ -56,7 +57,6 @@ const Project = () => {
           renderContent={() => <IssueSearch project={project} />}
         />
       )}
-
       {issueCreateModalHelpers.isOpen() && (
         <Modal
           isOpen
@@ -64,34 +64,32 @@ const Project = () => {
           width={800}
           withCloseIcon={false}
           onClose={issueCreateModalHelpers.close}
-          renderContent={modal => (
+          renderContent={(modal) => (
             <IssueCreate
               project={project}
               fetchProject={fetchProject}
-              onCreate={() => history.push(`${match.url}/board`)}
+              onCreate={() => navigate(`${params.projectId}/board`)} // Use params for dynamic part
               modalClose={modal.close}
             />
           )}
         />
       )}
-
       <Route
-        path={`${match.path}/board`}
-        render={() => (
+        path={`${match?.path}/board`}
+        element={
           <Board
             project={project}
             fetchProject={fetchProject}
             updateLocalProjectIssues={updateLocalProjectIssues}
           />
-        )}
+        } // Replaced render with element
       />
-
       <Route
-        path={`${match.path}/settings`}
-        render={() => <ProjectSettings project={project} fetchProject={fetchProject} />}
+        path={`${match?.path}/settings`}
+        element={<ProjectSettings project={project} fetchProject={fetchProject} />} // Replaced render with element
       />
-
-      {match.isExact && <Redirect to={`${match.url}/board`} />}
+      {match?.isExact && <Navigate to={`${match.url}/board`} />}{' '}
+      {/* Replaced Redirect with Navigate */}
     </ProjectPage>
   );
 };

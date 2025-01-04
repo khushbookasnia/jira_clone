@@ -9,6 +9,7 @@ module.exports = {
     filename: '[name].js',
     path: path.resolve(__dirname, 'dev'),
     publicPath: '/',
+    clean: true,
   },
   module: {
     rules: [
@@ -19,29 +20,33 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: ['style-loader', { loader: 'css-loader' }],
+        use: ['style-loader', 'css-loader'],
       },
       {
         test: /\.(jpe?g|png|gif|woff2?|eot|ttf|otf|svg)$/,
-        use: [
-          {
-            loader: 'url-loader',
-            options: { limit: 15000 },
+        type: 'asset',
+        parser: {
+          dataUrlCondition: {
+            maxSize: 15000,
           },
-        ],
+        },
       },
     ],
   },
   resolve: {
-    // allows us to do absolute imports from "src"
+    extensions: ['.js', '.jsx'], // Ensure Webpack resolves .js and .jsx extensions
     modules: [path.join(__dirname, 'src'), 'node_modules'],
-    extensions: ['*', '.js', '.jsx'],
+    alias: {
+      '../../core-js/object/assign': 'core-js/object/assign.js',
+      '../../core-js/object/create': 'core-js/object/create.js',
+    },
   },
-  devtool: 'eval-source-map',
+  devtool: 'source-map',
   devServer: {
-    contentBase: path.join(__dirname, 'dev'),
+    static: path.join(__dirname, 'dev'),
     historyApiFallback: true,
     hot: true,
+    port: 8080,
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),

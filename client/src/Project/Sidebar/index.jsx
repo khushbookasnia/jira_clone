@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { NavLink, useRouteMatch } from 'react-router-dom';
+import { NavLink, useMatch } from 'react-router-dom'; // Replaced useRouteMatch with useMatch
 
 import { ProjectCategoryCopy } from 'shared/constants/projects';
 import { Icon, ProjectAvatar } from 'shared/components';
@@ -22,7 +22,7 @@ const propTypes = {
 };
 
 const ProjectSidebar = ({ project }) => {
-  const match = useRouteMatch();
+  const match = useMatch(); // Updated to useMatch
 
   return (
     <Sidebar>
@@ -47,10 +47,12 @@ const ProjectSidebar = ({ project }) => {
 };
 
 const renderLinkItem = (match, text, iconType, path) => {
+  if (!match) return null;
+
   const isImplemented = !!path;
 
   const linkItemProps = isImplemented
-    ? { as: NavLink, exact: true, to: `${match.path}${path}` }
+    ? { as: NavLink, to: `${match?.path}${path}` } // Updated to use match?.path
     : { as: 'div' };
 
   return (

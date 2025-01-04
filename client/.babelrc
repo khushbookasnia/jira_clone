@@ -3,16 +3,17 @@
     [
       "@babel/preset-env",
       {
-        "useBuiltIns": "entry",
-        "corejs": 3
+        "useBuiltIns": "usage", // Change "entry" to "usage" for granular polyfilling
+        "corejs": 3 // Use the latest version of core-js
       }
     ],
-    "@babel/react"
+    "@babel/preset-react"
   ],
   "plugins": [
     ["@babel/plugin-proposal-decorators", { "legacy": true }],
     "@babel/plugin-proposal-export-namespace-from",
     "@babel/plugin-syntax-dynamic-import",
-    ["@babel/plugin-proposal-class-properties", { "loose": true }]
+    ["@babel/plugin-proposal-class-properties", { "loose": true }],
+    ["@babel/plugin-transform-runtime", { "corejs": false }] // Prevents duplicate polyfilling
   ]
 }

@@ -1,33 +1,12 @@
-import React, { Fragment } from 'react';
-import PropTypes from 'prop-types';
-import { Route, useRouteMatch, useHistory } from 'react-router-dom';
-
-import useMergeState from 'shared/hooks/mergeState';
-import { Breadcrumbs, Modal } from 'shared/components';
-
-import Header from './Header';
-import Filters from './Filters';
-import Lists from './Lists';
-import IssueDetails from './IssueDetails';
-
-const propTypes = {
-  project: PropTypes.object.isRequired,
-  fetchProject: PropTypes.func.isRequired,
-  updateLocalProjectIssues: PropTypes.func.isRequired,
-};
-
-const defaultFilters = {
-  searchTerm: '',
-  userIds: [],
-  myOnly: false,
-  recent: false,
-};
+import { useLocation } from 'react-router-dom';
 
 const ProjectBoard = ({ project, fetchProject, updateLocalProjectIssues }) => {
-  const match = useRouteMatch();
-  const history = useHistory();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const [filters, mergeFilters] = useMergeState(defaultFilters);
+
+  const matchPath = location.pathname;
 
   return (
     <Fragment>
@@ -45,17 +24,17 @@ const ProjectBoard = ({ project, fetchProject, updateLocalProjectIssues }) => {
         updateLocalProjectIssues={updateLocalProjectIssues}
       />
       <Route
-        path={`${match.path}/issues/:issueId`}
-        render={routeProps => (
+        path={`${matchPath}/issues/:issueId`}
+        element={(routeProps) => (
           <Modal
             isOpen
             testid="modal:issue-details"
             width={1040}
             withCloseIcon={false}
-            onClose={() => history.push(match.url)}
-            renderContent={modal => (
+            onClose={() => navigate(matchPath)}
+            renderContent={(modal) => (
               <IssueDetails
-                issueId={routeProps.match.params.issueId}
+                issueId={routeProps.params.issueId}
                 projectUsers={project.users}
                 fetchProject={fetchProject}
                 updateLocalProjectIssues={updateLocalProjectIssues}
@@ -68,7 +47,5 @@ const ProjectBoard = ({ project, fetchProject, updateLocalProjectIssues }) => {
     </Fragment>
   );
 };
-
-ProjectBoard.propTypes = propTypes;
 
 export default ProjectBoard;

@@ -6,7 +6,7 @@ import { objectToQueryString } from 'shared/utils/url';
 import { getStoredAuthToken, removeStoredAuthToken } from 'shared/utils/authToken';
 
 const defaults = {
-  baseURL: process.env.API_URL || 'http://localhost:3000',
+  baseURL: 'http://localhost:3000',
   headers: () => ({
     'Content-Type': 'application/json',
     Authorization: getStoredAuthToken() ? `Bearer ${getStoredAuthToken()}` : undefined,
@@ -29,10 +29,10 @@ const api = (method, url, variables) =>
       data: method !== 'get' ? variables : undefined,
       paramsSerializer: objectToQueryString,
     }).then(
-      response => {
+      (response) => {
         resolve(response.data);
       },
-      error => {
+      (error) => {
         if (error.response) {
           if (error.response.data.error.code === 'INVALID_TOKEN') {
             removeStoredAuthToken();

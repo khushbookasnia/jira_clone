@@ -2,6 +2,8 @@ import { createConnection, Connection } from 'typeorm';
 
 import * as entities from 'entities';
 
+console.log('_______________trying connetion______________________');
+
 const createDatabaseConnection = (): Promise<Connection> =>
   createConnection({
     type: 'postgres',

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useRouteMatch } from 'react-router-dom';
+import { useMatch } from 'react-router-dom'; // Updated import
 import { Draggable } from 'react-beautiful-dnd';
 
 import { IssueTypeIcon, IssuePriorityIcon } from 'shared/components';
@@ -14,9 +14,9 @@ const propTypes = {
 };
 
 const ProjectBoardListIssue = ({ projectUsers, issue, index }) => {
-  const match = useRouteMatch();
+  const match = useMatch(); // Updated usage
 
-  const assignees = issue.userIds.map(userId => projectUsers.find(user => user.id === userId));
+  const assignees = issue.userIds.map((userId) => projectUsers.find((user) => user.id === userId));
 
   return (
     <Draggable draggableId={issue.id.toString()} index={index}>
@@ -36,7 +36,7 @@ const ProjectBoardListIssue = ({ projectUsers, issue, index }) => {
                 <IssuePriorityIcon priority={issue.priority} top={-1} left={4} />
               </div>
               <Assignees>
-                {assignees.map(user => (
+                {assignees.map((user) => (
                   <AssigneeAvatar
                     key={user.id}
                     size={24}
