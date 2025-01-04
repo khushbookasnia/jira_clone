@@ -4,7 +4,7 @@
   "author": "Ivor Reic",
   "license": "MIT",
   "scripts": {
-    "start": "NODE_OPTIONS=--openssl-legacy-provider webpack-dev-server",
+    "start": "cross-env NODE_OPTIONS=--openssl-legacy-provider webpack-dev-server",
     "start:production": "pm2 start --name 'jira_client' server.js",
     "build": "rm -rf build && webpack --config webpack.config.production.js --progress",
     "test:jest": "jest",
