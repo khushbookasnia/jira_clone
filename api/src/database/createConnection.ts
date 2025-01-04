@@ -1,30 +1,20 @@
-import { createConnection } from 'typeorm';
+import { neon } from '@neondatabase/serverless';
 
-import * as entities from 'entities';
-
-const checkConnection = async () => {
+const createDatabaseConnection = async (): Promise<void> => {
   try {
-    console.log('Attempting to connect to the database...');
-    const connection = await createConnection({
-      type: 'postgres',
-      host: '127.0.0.1',
-      port: 5432,
-      username: 'postgres',
-      password: 'dnschool',
-      database: 'jira_development',
-      entities: Object.values(entities),
-      synchronize: true,
-    });
+    const sql = neon(
+      'postgresql://jira_development_owner:g6mhyN9TOjQn@ep-fragrant-art-a19fjmxa.ap-southeast-1.aws.neon.tech/jira_development?sslmode=require',
+    );
+    const result = await sql`SELECT version()`;
+    console.log('Connected to Neon Database:', result[0].version);
 
-    console.log('Connection established successfully!');
+    // Create the database connection using TypeORM and synchronize the schema
 
-    const result = await connection.query('SELECT NOW()');
-    console.log('Database Time:', result);
-
-    await connection.close();
+    console.log('Entities synchronized with Neon DB.');
   } catch (error) {
-    console.error('Error connecting to the database:', error);
+    console.error('Error establishing database connection:', error);
+    process.exit(1); // Exit if connection fails
   }
 };
 
-export default checkConnection;
+export default createDatabaseConnection;

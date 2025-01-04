@@ -30,7 +30,7 @@ const initializeExpress = (): void => {
   console.log('3rd----');
   app.use(express.json());
   console.log('4th----');
-  app.use(express.urlencoded());
+  app.use(express.urlencoded({ extended: true })); // Use extended true to handle complex objects in the URL
   console.log('5th----');
   app.use(addRespondToResponse);
   console.log('6th----');
