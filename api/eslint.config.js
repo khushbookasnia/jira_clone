@@ -1,9 +1,8 @@
-// eslint.config.js
 import { defineConfig } from 'eslint-define-config';
 
 export default defineConfig({
   languageOptions: {
-    parser: '@typescript-eslint/parser', // Use the parser under languageOptions
+    parser: '@typescript-eslint/parser', // Specify parser here in languageOptions
     parserOptions: {
       project: './tsconfig.json',
       sourceType: 'module',
