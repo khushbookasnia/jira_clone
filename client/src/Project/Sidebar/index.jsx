@@ -22,7 +22,7 @@ const propTypes = {
 };
 
 const ProjectSidebar = ({ project }) => {
-  const match = useMatch(); // Updated to useMatch
+  const match = useMatch('project');
 
   return (
     <Sidebar>
@@ -52,7 +52,7 @@ const renderLinkItem = (match, text, iconType, path) => {
   const isImplemented = !!path;
 
   const linkItemProps = isImplemented
-    ? { as: NavLink, to: `${match?.path}${path}` } // Updated to use match?.path
+    ? { as: NavLink, to: `${match?.path}${path}` }
     : { as: 'div' };
 
   return (

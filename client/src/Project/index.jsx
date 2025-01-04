@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Navigate, useMatch, useNavigate, useParams } from 'react-router-dom'; // Updated imports
+import { Route, Navigate, useMatch, useNavigate, useParams, Routes } from 'react-router-dom'; // Updated imports
 
 import useApi from 'shared/hooks/api';
 import { updateArrayItemById } from 'shared/utils/javascript';
@@ -74,20 +74,22 @@ const Project = () => {
           )}
         />
       )}
-      <Route
-        path={`${match?.path}/board`}
-        element={
-          <Board
-            project={project}
-            fetchProject={fetchProject}
-            updateLocalProjectIssues={updateLocalProjectIssues}
-          />
-        } // Replaced render with element
-      />
-      <Route
-        path={`${match?.path}/settings`}
-        element={<ProjectSettings project={project} fetchProject={fetchProject} />} // Replaced render with element
-      />
+      <Routes>
+        <Route
+          path={`${match?.path}/board`}
+          element={
+            <Board
+              project={project}
+              fetchProject={fetchProject}
+              updateLocalProjectIssues={updateLocalProjectIssues}
+            />
+          } // Replaced render with element
+        />
+        <Route
+          path={`${match?.path}/settings`}
+          element={<ProjectSettings project={project} fetchProject={fetchProject} />} // Replaced render with element
+        />
+      </Routes>
       {match?.isExact && <Navigate to={`${match.url}/board`} />}{' '}
       {/* Replaced Redirect with Navigate */}
     </ProjectPage>
