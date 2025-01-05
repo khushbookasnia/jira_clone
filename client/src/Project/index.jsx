@@ -74,19 +74,20 @@ const Project = () => {
           )}
         />
       )}
+      {console.log(match)}
       <Routes>
         <Route
-          path={`${match?.path}/board`}
+          path={`${match?.pathname}/board`}
           element={
             <Board
               project={project}
               fetchProject={fetchProject}
               updateLocalProjectIssues={updateLocalProjectIssues}
             />
-          } // Replaced render with element
+          }
         />
         <Route
-          path={`${match?.path}/settings`}
+          path={`${match?.pathname}/settings`}
           element={<ProjectSettings project={project} fetchProject={fetchProject} />} // Replaced render with element
         />
       </Routes>

@@ -5,15 +5,26 @@ const sql = neon(process.env.NEON_DATABASE_URL!);
 export const getProjectWithUsersAndIssues = async (req: any, res: any, _next: any) => {
   try {
     // Ensure project_id is provided
-    const { project_id } = req.currentUser ?? {};
+    const { id: project_id } = req.currentUser ?? {};
+    console.log('project_id:', project_id, req.currentUser);
     if (!project_id) {
       return res.status(400).send({ message: 'Project ID is required.' });
     }
 
-    // Use parameterized queries
     const projectResult = await sql`SELECT * FROM projects WHERE id = ${project_id}`;
-    const issuesResult = await sql`SELECT * FROM issues WHERE project_id = ${project_id}`;
-    const usersResult = await sql`SELECT * FROM users WHERE project_id = ${project_id}`;
+
+    const issuesResult = await sql`
+      SELECT * 
+      FROM issues 
+      WHERE project_id = ${project_id}
+    `;
+
+    const usersResult = await sql`
+      SELECT u.* 
+      FROM users u
+      INNER JOIN users_projects pu ON u.id = pu.user_id
+      WHERE pu.project_id = ${project_id}
+    `;
 
     // Check if the project exists
     if (projectResult.length === 0) {
