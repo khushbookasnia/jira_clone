@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useMatch } from 'react-router-dom'; // Updated import
+import { useMatch, useLocation } from 'react-router-dom';
 import { Draggable } from 'react-beautiful-dnd';
 
 import { IssueTypeIcon, IssuePriorityIcon } from 'shared/components';
@@ -14,15 +14,22 @@ const propTypes = {
 };
 
 const ProjectBoardListIssue = ({ projectUsers, issue, index }) => {
-  const match = useMatch(); // Updated usage
+  const location = useLocation();
+  const match = useMatch('/project/board/*');
 
-  const assignees = issue.userIds.map((userId) => projectUsers.find((user) => user.id === userId));
+  const issueUrl = match
+    ? `${match.pathname}/issues/${issue.id}`
+    : `/project/board/issues/${issue.id}`;
+
+  const assignees = issue?.userIds?.map((userId) =>
+    projectUsers.find((user) => user.id === userId),
+  );
 
   return (
     <Draggable draggableId={issue.id.toString()} index={index}>
       {(provided, snapshot) => (
         <IssueLink
-          to={`${match.url}/issues/${issue.id}`}
+          to={issueUrl}
           ref={provided.innerRef}
           data-testid="list-issue"
           {...provided.draggableProps}
@@ -36,7 +43,7 @@ const ProjectBoardListIssue = ({ projectUsers, issue, index }) => {
                 <IssuePriorityIcon priority={issue.priority} top={-1} left={4} />
               </div>
               <Assignees>
-                {assignees.map((user) => (
+                {assignees?.map((user) => (
                   <AssigneeAvatar
                     key={user.id}
                     size={24}

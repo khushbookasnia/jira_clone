@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Navigate, useMatch, useNavigate, useParams, Routes } from 'react-router-dom'; // Updated imports
+import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 
 import useApi from 'shared/hooks/api';
 import { updateArrayItemById } from 'shared/utils/javascript';
@@ -15,9 +15,7 @@ import ProjectSettings from './ProjectSettings';
 import { ProjectPage } from './Styles';
 
 const Project = () => {
-  const match = useMatch('project');
   const navigate = useNavigate();
-  const params = useParams();
 
   const issueSearchModalHelpers = createQueryParamModalHelpers('issue-search');
   const issueCreateModalHelpers = createQueryParamModalHelpers('issue-create');
@@ -38,8 +36,6 @@ const Project = () => {
     }));
   };
 
-  if (!match) return null;
-
   return (
     <ProjectPage>
       <NavbarLeft
@@ -47,6 +43,7 @@ const Project = () => {
         issueCreateModalOpen={issueCreateModalHelpers.open}
       />
       <Sidebar project={project} />
+
       {issueSearchModalHelpers.isOpen() && (
         <Modal
           isOpen
@@ -57,6 +54,7 @@ const Project = () => {
           renderContent={() => <IssueSearch project={project} />}
         />
       )}
+
       {issueCreateModalHelpers.isOpen() && (
         <Modal
           isOpen
@@ -68,16 +66,17 @@ const Project = () => {
             <IssueCreate
               project={project}
               fetchProject={fetchProject}
-              onCreate={() => navigate(`${params.projectId}/board`)} // Use params for dynamic part
+              onCreate={() => navigate('board')}
               modalClose={modal.close}
             />
           )}
         />
       )}
-      {console.log(match)}
+
       <Routes>
+        <Route path="/" element={<Navigate to="board" replace />} />
         <Route
-          path={`${match?.pathname}/board`}
+          path="board/*"
           element={
             <Board
               project={project}
@@ -87,12 +86,10 @@ const Project = () => {
           }
         />
         <Route
-          path={`${match?.pathname}/settings`}
-          element={<ProjectSettings project={project} fetchProject={fetchProject} />} // Replaced render with element
+          path="settings"
+          element={<ProjectSettings project={project} fetchProject={fetchProject} />}
         />
       </Routes>
-      {match?.isExact && <Navigate to={`${match.url}/board`} />}{' '}
-      {/* Replaced Redirect with Navigate */}
     </ProjectPage>
   );
 };

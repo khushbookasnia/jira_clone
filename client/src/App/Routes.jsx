@@ -10,7 +10,7 @@ const AppRoutes = () => (
     <Routes>
       <Route path="/" element={<Navigate to="/project" replace />} />
       <Route path="/authenticate" element={<Authenticate />} />
-      <Route path="/project" element={<Project />} />
+      <Route path="/project/*" element={<Project />} />
       <Route path="*" element={<PageError />} />
     </Routes>
   </Router>
